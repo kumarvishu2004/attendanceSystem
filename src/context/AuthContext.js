@@ -44,21 +44,29 @@ export const AuthProvider = ({ children }) => {
 
   // Google sign-in/sign-up
   // Returns { user } on success, or { needsEmployeeId: true, googleData } if new user needs extra info
-  const googleLogin = async (idToken, employeeId = null, department = null) => {
-    const payload = { idToken };
-    if (employeeId) payload.employeeId = employeeId;
-    if (department) payload.department = department;
+ const googleLogin = async (credential, employeeId = null, department = null) => {
+  const payload = { idToken: credential };
 
-    const res = await API.post('/auth/google', payload);
-    const { token: t, user: u, needsEmployeeId, googleData } = res.data;
+  if (employeeId) payload.employeeId = employeeId;
+  if (department) payload.department = department;
 
-    if (needsEmployeeId) {
-      return { needsEmployeeId: true, googleData };
-    }
+  const res = await API.post('/auth/google', payload);
 
-    _saveSession(t, u);
-    return { user: u };
-  };
+  const {
+    token: t,
+    user: u,
+    needsEmployeeId,
+    googleData
+  } = res.data;
+
+  if (needsEmployeeId) {
+    return { needsEmployeeId: true, googleData };
+  }
+
+  _saveSession(t, u);
+
+  return { user: u };
+};
 
   const updateUser = (updatedUser) => {
     setUser(updatedUser);

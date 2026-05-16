@@ -49,14 +49,6 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       if (isGoogleCompletion) {
-        // Complete Google registration by passing employeeId + department
-        const result = await googleLogin(
-          null, // no new idToken, server uses googleData stored from previous step
-          form.employeeId,
-          form.department
-        );
-        // Since we don't have idToken here, we need to re-trigger Google flow
-        // with the stored googleId approach — instead, call register endpoint directly
         const res = await API.post('/auth/google-complete', {
           googleId: incomingGoogleData.googleId,
           email: incomingGoogleData.email,
